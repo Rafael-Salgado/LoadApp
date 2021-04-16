@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.animation.ObjectAnimator
 import android.app.DownloadManager
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
 
+    private lateinit var loadingButton: LoadingButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,7 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
+        loadingButton = findViewById(R.id.custom_button)
         custom_button.setOnClickListener {
+            loadingButton.buttonState = ButtonState.Clicked
             download()
         }
     }
@@ -38,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            loadingButton.buttonState = ButtonState.Completed
         }
     }
 
@@ -53,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
+        loadingButton.buttonState = ButtonState.Loading
     }
 
     companion object {

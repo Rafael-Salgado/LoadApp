@@ -17,6 +17,11 @@
         android:layout_height="60dp"
         android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:colorBackground="@color/colorPrimary"
+        app:colorLoading="@color/colorPrimaryDark"
+        app:colorCircle="@color/colorAccent"
+        app:text="@string/button_text"
+        app:textWhileLoading="@string/button_loading"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
