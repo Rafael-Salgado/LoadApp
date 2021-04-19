@@ -13,4 +13,10 @@
     <string name="title_activity_detail">DetailActivity</string>
 
     <string name="button_text">Download</string>
+    <string name="glide_text">Glide - Image Loading Library by Bump Tech </string>
+    <string name="loadapp__text">LoadApp - Current Repository by Udacity</string>
+    <string name="retrofit_text">Retrofit - Type-safe HTTP client for Android and Java by Square, Inc</string>
+    <string name="custom_uri_text">Custom URL:</string>
+    <string name="toast_message">Please select the file to download</string>
+    <string name="error_message">Invalid URL</string>
 </resources>

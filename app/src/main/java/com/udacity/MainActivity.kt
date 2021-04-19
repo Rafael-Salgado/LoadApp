@@ -10,6 +10,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
+import android.webkit.URLUtil
+import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -34,9 +38,9 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
         loadingButton = findViewById(R.id.custom_button)
+
         custom_button.setOnClickListener {
-            loadingButton.buttonState = ButtonState.Clicked
-            download()
+            filterOption()
         }
     }
 
@@ -47,9 +51,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun download() {
+    private fun download(url: String) {
+        loadingButton.buttonState = ButtonState.Clicked
         val request =
-            DownloadManager.Request(Uri.parse(URL))
+            DownloadManager.Request(Uri.parse(url))
                 .setTitle(getString(R.string.app_name))
                 .setDescription(getString(R.string.app_description))
                 .setRequiresCharging(false)
@@ -62,9 +67,40 @@ class MainActivity : AppCompatActivity() {
         loadingButton.buttonState = ButtonState.Loading
     }
 
+    private fun filterOption(){
+        when {
+            glide_button.isChecked -> {
+                download(URL_GLIDE)
+            }
+            retrofit_button.isChecked -> {
+                download(URL_RETROFIT)
+            }
+            loadapp_button.isChecked -> {
+                download(URL_LOADAPP)
+            }
+            custom_url_button.isChecked->{
+                val customURL = edit_custom_url.text.toString()
+                if(URLUtil.isValidUrl(customURL)){
+                    download(customURL)
+                }else{
+                    edit_custom_url.error = getString(R.string.error_message)
+                }
+            }
+            else -> {
+                Toast.makeText(applicationContext, getString(R.string.toast_message), Toast.LENGTH_LONG).show()
+                loadingButton.buttonState = ButtonState.Clicked
+                loadingButton.buttonState = ButtonState.Completed
+            }
+        }
+    }
+
     companion object {
-        private const val URL =
+        private const val URL_LOADAPP =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        private const val URL_GLIDE =
+            "https://github.com/bumptech/glide/archive/refs/heads/master.zip"
+        private const val URL_RETROFIT =
+            "https://github.com/square/retrofit/archive/refs/heads/master.zip"
         private const val CHANNEL_ID = "channelId"
     }
 
