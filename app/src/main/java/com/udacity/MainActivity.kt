@@ -1,6 +1,6 @@
 package com.udacity
 
-import android.animation.ObjectAnimator
+
 import android.app.DownloadManager
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,15 +10,15 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
 import android.webkit.URLUtil
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
+private const val FILE_NAME = "FILE NAME"
+private const val STATUS_STATE = "STATUS"
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var action: NotificationCompat.Action
 
     private lateinit var loadingButton: LoadingButton
+
+    private var fileName:String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +44,19 @@ class MainActivity : AppCompatActivity() {
         custom_button.setOnClickListener {
             filterOption()
         }
+        notificationManager =  this.getSystemService(NotificationManager::class.java)
+        notificationManager.createChannel(this)
     }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+            val status = getStatus(id)
             loadingButton.buttonState = ButtonState.Completed
+            val contentIntent = Intent(applicationContext, DetailActivity::class.java)
+            contentIntent.putExtra(FILE_NAME,fileName)
+            contentIntent.putExtra(STATUS_STATE,status)
+            notificationManager.sendNotification(applicationContext,contentIntent)
         }
     }
 
@@ -67,31 +76,51 @@ class MainActivity : AppCompatActivity() {
         loadingButton.buttonState = ButtonState.Loading
     }
 
-    private fun filterOption(){
+    private fun filterOption() {
         when {
             glide_button.isChecked -> {
                 download(URL_GLIDE)
+                fileName = getString(R.string.glide_text)
             }
             retrofit_button.isChecked -> {
                 download(URL_RETROFIT)
+                fileName = getString(R.string.retrofit_text)
             }
             loadapp_button.isChecked -> {
                 download(URL_LOADAPP)
+                fileName = getString(R.string.loadapp__text)
             }
-            custom_url_button.isChecked->{
+            custom_url_button.isChecked -> {
                 val customURL = edit_custom_url.text.toString()
-                if(URLUtil.isValidUrl(customURL)){
+                if (URLUtil.isValidUrl(customURL)) {
                     download(customURL)
-                }else{
+                    fileName = getString(R.string.customurl_text)
+                } else {
                     edit_custom_url.error = getString(R.string.error_message)
                 }
             }
             else -> {
-                Toast.makeText(applicationContext, getString(R.string.toast_message), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.toast_message),
+                    Toast.LENGTH_LONG
+                ).show()
                 loadingButton.buttonState = ButtonState.Clicked
                 loadingButton.buttonState = ButtonState.Completed
             }
         }
+    }
+
+    private fun getStatus (id: Long?): Boolean{
+        var statusState = false
+        val query = DownloadManager.Query().setFilterById(id!!)
+        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        val cursor = downloadManager.query(query)
+        if (cursor.moveToFirst()){
+            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+            if (status == DownloadManager.STATUS_SUCCESSFUL) statusState = true
+        }
+        return statusState
     }
 
     companion object {

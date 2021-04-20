@@ -1,7 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MotionScene xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <Transition>
+    <Transition
+        app:constraintSetStart="@id/start_anim"
+        app:constraintSetEnd="@id/end_anim"
+        app:duration="2000"
+        app:autoTransition="animateToEnd"/>
 
-    </Transition>
+    <ConstraintSet android:id="@+id/start_anim">
+        <Constraint
+            android:id="@+id/linear_layout_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <CustomAttribute
+                app:attributeName="alpha"
+                app:customFloatValue="0.0"/>
+            <CustomAttribute
+                app:attributeName="layout_margin"
+                app:customDimension="16dp"/>
+        </Constraint>
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end_anim">
+        <Constraint
+            android:id="@+id/linear_layout_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <CustomAttribute
+                app:attributeName="alpha"
+                app:customFloatValue="1.0"/>
+            <CustomAttribute
+                app:attributeName="layout_margin"
+                app:customDimension="16dp"/>
+        </Constraint>
+    </ConstraintSet>
 </MotionScene>
